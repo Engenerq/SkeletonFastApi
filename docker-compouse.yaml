@@ -1,0 +1,31 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    env_file: .env
+    networks:
+      - my-net
+    restart: always
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    restart: on-failure
+    depends_on:
+      - db
+    env_file: .env
+    volumes:
+      - ./:/app
+    networks:
+      - my-net
+
+networks:
+  my-net:
+    driver: bridge

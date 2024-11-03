@@ -2,13 +2,15 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
+from app.core.constants import BASE_PATH
+
 
 class DatabaseSettings(BaseModel):
     host: str
     port: int
     user: str
     password: str
-    db: str
+    database: str
 
 
 class Settings(BaseSettings):
@@ -36,7 +38,8 @@ class Settings(BaseSettings):
         }
 
     class Config:
-        env_file = ".env"
+        env_file = BASE_PATH / ".env"
+        print(env_file)
         env_nested_delimiter = "__"
 
 

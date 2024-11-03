@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 
 from app.core.config import get_settings
+from app.core.errors.validation import validation_error_handler, http_errors_handler
 from app.core.lifespan.contex_manager import lifespan
 from app.web.router import main_router
 
@@ -10,7 +12,7 @@ class Application:
 
     def __init__(self):
         self._config = get_settings()
-        self.create_app().include_router().set_lifespan()
+        self.create_app().include_router()
 
     def __call__(self, *args, **kwargs):
         return self.app
@@ -26,7 +28,9 @@ class Application:
         self.app.include_router(main_router)
         return self
 
-    def set_lifespan(self):
+    def add_exception(self):
+        self.app.add_exception_handler(RequestValidationError, validation_error_handler)
+        self.app.add_exception_handler(HTTPException, http_errors_handler)
         return self
 
 
